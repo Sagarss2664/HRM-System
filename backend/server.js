@@ -231,13 +231,72 @@ app.get('/developer_dashboard.html', (req, res) => {
 });
 
 // Authentication Endpoints
+// app.post('/api/login', async (req, res) => {
+//     res.header('Access-Control-Allow-Origin', req.headers.origin || 'http://127.0.0.1:5500');
+//     res.header('Access-Control-Allow-Credentials', 'true');
+    
+//     const { employeeId, password, role } = req.body;
+
+//     try {
+//         const user = await Login.findOne({ employeeId });
+//         if (!user) return res.status(401).json({ message: 'Invalid credentials' });
+
+//         if (user.password !== password) {
+//             return res.status(401).json({ message: 'Invalid credentials' });
+//         }
+
+//         const employee = await Employee.findOne({ employeeId });
+//         if (!employee) {
+//             return res.status(401).json({ message: 'Employee not found' });
+//         }
+
+//         if (employee.role !== role) {
+//             return res.status(403).json({ message: 'Access denied for this role' });
+//         }
+
+//         const token = jwt.sign(
+//             { employeeId: user.employeeId, role: employee.role },
+//             JWT_SECRET,
+//             { expiresIn: '1h' }
+//         );
+//         res.cookie('token', token, {
+//       httpOnly: true,
+//       secure: true, // For HTTPS
+//       sameSite: 'none', // Required for cross-site
+//       maxAge: 3600000 // 1 hour
+//     });
+
+//     res.json({
+//       success: true,
+//       employeeId: user.employeeId,
+//       role: employee.role,
+//       name: employee.name
+//     });
+
+//         res.json({ 
+//             token,
+//             employeeId: user.employeeId,
+//             role: employee.role,
+//             name: employee.name
+//         });
+//     } catch (error) {
+//         console.error('Login error:', error);
+//         res.status(500).json({ message: 'Server error' });
+//     }
+// });
 app.post('/api/login', async (req, res) => {
+    // Set CORS headers (move this to middleware if possible)
     res.header('Access-Control-Allow-Origin', req.headers.origin || 'http://127.0.0.1:5500');
     res.header('Access-Control-Allow-Credentials', 'true');
     
     const { employeeId, password, role } = req.body;
 
     try {
+        // Input validation
+        if (!employeeId || !password || !role) {
+            return res.status(400).json({ message: 'All fields are required' });
+        }
+
         const user = await Login.findOne({ employeeId });
         if (!user) return res.status(401).json({ message: 'Invalid credentials' });
 
@@ -259,26 +318,21 @@ app.post('/api/login', async (req, res) => {
             JWT_SECRET,
             { expiresIn: '1h' }
         );
+
+        // Single response with cookie and JSON
         res.cookie('token', token, {
-      httpOnly: true,
-      secure: true, // For HTTPS
-      sameSite: 'none', // Required for cross-site
-      maxAge: 3600000 // 1 hour
-    });
-
-    res.json({
-      success: true,
-      employeeId: user.employeeId,
-      role: employee.role,
-      name: employee.name
-    });
-
-        res.json({ 
-            token,
+            httpOnly: true,
+            secure: true,
+            sameSite: 'none',
+            maxAge: 3600000
+        }).json({
+            success: true,
             employeeId: user.employeeId,
             role: employee.role,
-            name: employee.name
+            name: employee.name,
+            token // Include token in response if needed by client
         });
+
     } catch (error) {
         console.error('Login error:', error);
         res.status(500).json({ message: 'Server error' });
