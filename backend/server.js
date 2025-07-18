@@ -5,8 +5,6 @@ const jwt = require('jsonwebtoken');
 const path = require('path');
 
 const app = express();
-
-// Enhanced CORS configuration - MUST be before other middleware
 app.use(cors({
     origin: ['http://127.0.0.1:5500', 'http://localhost:3000'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
