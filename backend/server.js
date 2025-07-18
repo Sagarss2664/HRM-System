@@ -284,77 +284,174 @@ app.get('/developer_dashboard.html', (req, res) => {
 //         res.status(500).json({ message: 'Server error' });
 //     }
 // });
-app.post('/api/login', async (req, res) => {
-    // Set CORS headers (move this to middleware if possible)
-    res.header('Access-Control-Allow-Origin', req.headers.origin || 'http://127.0.0.1:5500');
-    res.header('Access-Control-Allow-Credentials', 'true');
+// app.post('/api/login', async (req, res) => {
+//     // Set CORS headers (move this to middleware if possible)
+//     res.header('Access-Control-Allow-Origin', req.headers.origin || 'http://127.0.0.1:5500');
+//     res.header('Access-Control-Allow-Credentials', 'true');
     
-    const { employeeId, password, role } = req.body;
+//     const { employeeId, password, role } = req.body;
 
+//     try {
+//         // Input validation
+//         if (!employeeId || !password || !role) {
+//             return res.status(400).json({ message: 'All fields are required' });
+//         }
+
+//         const user = await Login.findOne({ employeeId });
+//         if (!user) return res.status(401).json({ message: 'Invalid credentials' });
+
+//         if (user.password !== password) {
+//             return res.status(401).json({ message: 'Invalid credentials' });
+//         }
+
+//         const employee = await Employee.findOne({ employeeId });
+//         if (!employee) {
+//             return res.status(401).json({ message: 'Employee not found' });
+//         }
+
+//         if (employee.role !== role) {
+//             return res.status(403).json({ message: 'Access denied for this role' });
+//         }
+
+//         const token = jwt.sign(
+//             { employeeId: user.employeeId, role: employee.role },
+//             JWT_SECRET,
+//             { expiresIn: '1h' }
+//         );
+
+//         // Single response with cookie and JSON
+//         res.cookie('token', token, {
+//             httpOnly: true,
+//             secure: true,
+//             sameSite: 'none',
+//             maxAge: 3600000
+//         }).json({
+//             success: true,
+//             employeeId: user.employeeId,
+//             role: employee.role,
+//             name: employee.name,
+//             token // Include token in response if needed by client
+//         });
+
+//     } catch (error) {
+//         console.error('Login error:', error);
+//         res.status(500).json({ message: 'Server error' });
+//     }
+// });
+// // Other API endpoints (validate-token and employee) remain the same as previous version
+// app.post('/api/validate-token', async (req, res) => {
+//     const token = req.headers.authorization?.split(' ')[1];
+//     const { employeeId } = req.body;
+
+//     if (!token) {
+//         return res.status(401).json({ valid: false });
+//     }
+
+//     try {
+//         const decoded = jwt.verify(token, JWT_SECRET);
+        
+//         if (decoded.employeeId !== employeeId) {
+//             return res.status(401).json({ valid: false });
+//         }
+
+//         res.json({ valid: true });
+//     } catch (error) {
+//         res.status(401).json({ valid: false });
+//     }
+// });
+// Enhanced login endpoint
+app.post('/api/login', async (req, res) => {
     try {
+        const { employeeId, password, role } = req.body;
+
         // Input validation
         if (!employeeId || !password || !role) {
-            return res.status(400).json({ message: 'All fields are required' });
+            return res.status(400).json({ 
+                success: false,
+                message: 'All fields are required' 
+            });
         }
 
+        // User authentication
         const user = await Login.findOne({ employeeId });
-        if (!user) return res.status(401).json({ message: 'Invalid credentials' });
-
-        if (user.password !== password) {
-            return res.status(401).json({ message: 'Invalid credentials' });
+        if (!user || user.password !== password) {
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid credentials'
+            });
         }
 
+        // Employee verification
         const employee = await Employee.findOne({ employeeId });
         if (!employee) {
-            return res.status(401).json({ message: 'Employee not found' });
+            return res.status(404).json({
+                success: false,
+                message: 'Employee not found'
+            });
         }
 
         if (employee.role !== role) {
-            return res.status(403).json({ message: 'Access denied for this role' });
+            return res.status(403).json({
+                success: false,
+                message: 'Access denied for this role'
+            });
         }
 
+        // Token generation
         const token = jwt.sign(
-            { employeeId: user.employeeId, role: employee.role },
-            JWT_SECRET,
+            { 
+                employeeId: user.employeeId, 
+                role: employee.role,
+                name: employee.name
+            },
+            process.env.JWT_SECRET,
             { expiresIn: '1h' }
         );
 
-        // Single response with cookie and JSON
+        // Set cookie and send response
         res.cookie('token', token, {
             httpOnly: true,
-            secure: true,
-            sameSite: 'none',
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
             maxAge: 3600000
         }).json({
             success: true,
+            token,
             employeeId: user.employeeId,
             role: employee.role,
-            name: employee.name,
-            token // Include token in response if needed by client
+            name: employee.name
         });
 
     } catch (error) {
         console.error('Login error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({
+            success: false,
+            message: 'Server error during authentication'
+        });
     }
 });
-// Other API endpoints (validate-token and employee) remain the same as previous version
-app.post('/api/validate-token', async (req, res) => {
-    const token = req.headers.authorization?.split(' ')[1];
-    const { employeeId } = req.body;
 
-    if (!token) {
-        return res.status(401).json({ valid: false });
-    }
-
+// Enhanced token validation endpoint
+app.post('/validate-token', async (req, res) => {
     try {
-        const decoded = jwt.verify(token, JWT_SECRET);
+        const token = req.headers.authorization?.split(' ')[1] || req.cookies.token;
+        const { employeeId } = req.body;
+
+        if (!token) {
+            return res.status(401).json({ valid: false });
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
         
         if (decoded.employeeId !== employeeId) {
             return res.status(401).json({ valid: false });
         }
 
-        res.json({ valid: true });
+        res.json({ 
+            valid: true,
+            role: decoded.role,
+            name: decoded.name
+        });
     } catch (error) {
         res.status(401).json({ valid: false });
     }
