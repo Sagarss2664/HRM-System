@@ -1,0 +1,1809 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Developer Dashboard | AI Tech HRM</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Base styling */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #a5f3fc, #bfdbfe, #99f6e4);
+            background-size: 200% 200%;
+            animation: gradientShift 8s ease infinite;
+            color: #1e293b; /* slate-800 */
+            transition: background 0.4s ease;
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* Header */
+        .dashboard-header {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #0e7490;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .header-title span {
+            background: linear-gradient(to right, #06b6d4, #0d9488);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-user {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .user-info {
+            text-align: right;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .user-role {
+            font-size: 0.85rem;
+            color: #475569;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: #0e7490;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        /* Main content */
+        .dashboard-container {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .welcome-section {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            padding: 2rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            border: 2px solid #bae6fd;
+        }
+
+        .welcome-title {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: #0e7490;
+        }
+
+        .welcome-subtitle {
+            color: #475569;
+            margin-bottom: 1rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            border: 2px solid #bae6fd;
+            transition: transform 0.3s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            color: #0e7490;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-content {
+            color: #475569;
+        }
+
+        /* New styles for availability form */
+        .availability-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .day-section {
+            background: rgba(236, 253, 245, 0.7);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #ccfbf1;
+        }
+
+        .day-header {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #0d9488;
+        }
+
+        .time-slots {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .time-slot {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .time-input {
+            padding: 0.3rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            width: 80px;
+        }
+
+        .remove-slot {
+            color: #ef4444;
+            cursor: pointer;
+        }
+
+        .add-slot {
+            color: #10b981;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 0.3rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .submit-btn {
+            background: linear-gradient(to right, #06b6d4, #0d9488);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 1rem;
+            align-self: flex-start;
+        }
+
+        .submit-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Time tracking styles */
+        .time-tracking {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .tracking-controls {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .tracking-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .clock-in {
+            background-color: #bbf7d0;
+            color: #166534;
+        }
+
+        .clock-out {
+            background-color: #fecaca;
+            color: #991b1b;
+        }
+
+        .tracking-status {
+            font-weight: 600;
+            padding: 0.5rem;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .clocked-in {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .clocked-out {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .tracking-history {
+            margin-top: 1rem;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .history-table th, .history-table td {
+            padding: 0.5rem;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .history-table th {
+            background-color: #f1f5f9;
+            color: #334155;
+        }
+
+        /* Performance styles */
+        .performance-metrics {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .metric-label {
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .metric-value {
+            font-weight: 700;
+        }
+
+        .good {
+            color: #16a34a;
+        }
+
+        .warning {
+            color: #d97706;
+        }
+
+        .bad {
+            color: #dc2626;
+        }
+
+        .progress-container {
+            height: 10px;
+            background-color: #e2e8f0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, #06b6d4, #0d9488);
+            border-radius: 5px;
+        }
+
+        /* Feedback styles */
+        .feedback-item {
+            background: rgba(255, 255, 255, 0.7);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #06b6d4;
+        }
+
+        .feedback-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .feedback-date {
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+
+        .feedback-sender {
+            font-weight: 600;
+            color: #0e7490;
+        }
+
+        .feedback-content {
+            color: #475569;
+        }
+
+        .ai-feedback {
+            background: rgba(236, 253, 245, 0.7);
+            border-left: 4px solid #10b981;
+        }
+
+        /* Notification styles */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            z-index: 1000;
+            transform: translateX(200%);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            border-left: 4px solid #10b981;
+        }
+
+        .notification.warning {
+            border-left: 4px solid #f59e0b;
+        }
+
+        .notification.error {
+            border-left: 4px solid #ef4444;
+        }
+
+        .notification-icon {
+            font-size: 1.5rem;
+        }
+
+        .notification-content {
+            flex-grow: 1;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .notification-close {
+            cursor: pointer;
+            color: #64748b;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #0e7490;
+        }
+
+        .modal-close {
+            float: right;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: #64748b;
+        }
+
+        /* Footer */
+        .dashboard-footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        /* Media Queries for responsiveness */
+        @media (max-width: 768px) {
+            .dashboard-header {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .header-user {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .dashboard-container {
+                padding: 1rem;
+            }
+
+            .welcome-section {
+                padding: 1.5rem;
+            }
+
+            .welcome-title {
+                font-size: 1.5rem;
+            }
+
+            .tracking-controls {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .welcome-section {
+                padding: 1.2rem;
+            }
+
+            .welcome-title {
+                font-size: 1.3rem;
+            }
+
+            .time-slots {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="dashboard-header">
+        <div class="header-title">
+            <span>AI Tech HRM</span> | Developer Dashboard
+        </div>
+        <div class="header-user">
+            <div class="user-info">
+                <div class="user-name" id="developerUserName">Loading...</div>
+                <div class="user-role">Developer</div>
+            </div>
+            <button class="logout-btn" id="logoutBtn">
+                <span>Logout</span> →
+            </button>
+        </div>
+    </header>
+
+    <main class="dashboard-container">
+        <section class="welcome-section">
+            <h1 class="welcome-title">Welcome, <span id="welcomeName">Developer</span></h1>
+            <p class="welcome-subtitle">Submit your availability, track your work, and view feedback.</p>
+            <div id="availabilityAlert" style="display: none; background-color: #fef3c7; padding: 0.8rem; border-radius: 8px; margin-top: 1rem;">
+                <i class="fas fa-exclamation-circle" style="color: #d97706;"></i>
+                <span style="margin-left: 0.5rem;">You haven't submitted your availability for this week yet. Please submit it now.</span>
+            </div>
+        </section>
+
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
+                <h2 class="card-title">📅 Weekly Availability</h2>
+                <div class="card-content">
+                    <p>Submit your 4-day availability for the upcoming week (36 hours total).</p>
+                    <button id="openAvailabilityModal" style="margin-top: 1rem; background: linear-gradient(to right, #06b6d4, #0d9488); color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer;">
+                        Update Availability
+                    </button>
+                    <div id="currentAvailability" style="margin-top: 1rem; padding: 1rem; background-color: #ecfdf5; border-radius: 8px; display: none;">
+                        <h3 style="font-size: 1rem; color: #0d9488; margin-bottom: 0.5rem;">Your Current Availability</h3>
+                        <div id="availabilityDisplay"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dashboard-card">
+                <h2 class="card-title">⏱️ Time Tracking</h2>
+                <div class="card-content time-tracking">
+                    <div class="tracking-controls">
+                        <button id="clockInBtn" class="tracking-btn clock-in">
+                            <i class="fas fa-sign-in-alt"></i> Clock In
+                        </button>
+                        <button id="clockOutBtn" class="tracking-btn clock-out" disabled>
+                            <i class="fas fa-sign-out-alt"></i> Clock Out
+                        </button>
+                    </div>
+                    <div id="trackingStatus" class="tracking-status clocked-out">
+                        <i class="fas fa-clock"></i> Currently: Clocked Out
+                    </div>
+                    <div class="tracking-history">
+                        <h3 style="font-size: 1rem; color: #0e7490; margin-bottom: 0.5rem;">Today's Activity</h3>
+                        <table class="history-table">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Action</th>
+                                    <th>Duration</th>
+                                </tr>
+                            </thead>
+                            <tbody id="todayActivity">
+                                <!-- Will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dashboard-card">
+                <h2 class="card-title">📊 Performance</h2>
+                <div class="card-content performance-metrics">
+                    <div class="metric">
+                        <span class="metric-label">Weekly Hours Completed:</span>
+                        <span class="metric-value" id="hoursCompleted">0/36</span>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="hoursProgress" style="width: 0%"></div>
+                    </div>
+                    
+                    <div class="metric">
+                        <span class="metric-label">On Time Availability:</span>
+                        <span class="metric-value good" id="onTimeAvailability">100%</span>
+                    </div>
+                    
+                    <div class="metric">
+                        <span class="metric-label">Activity Variance:</span>
+                        <span class="metric-value good" id="activityVariance">±0%</span>
+                    </div>
+                    
+                    <div class="metric">
+                        <span class="metric-label">Productivity Score:</span>
+                        <span class="metric-value good" id="productivityScore">95</span>
+                    </div>
+                    
+                    <button id="viewPerformanceBtn" style="margin-top: 1rem; background: none; border: 1px solid #06b6d4; color: #06b6d4; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer;">
+                        View Detailed Performance
+                    </button>
+                </div>
+            </div>
+            
+            <div class="dashboard-card">
+                <h2 class="card-title">📝 Feedback</h2>
+                <div class="card-content">
+                    <div id="feedbackList">
+                        <div class="feedback-item ai-feedback">
+                            <div class="feedback-header">
+                                <span class="feedback-sender">AI Assistant</span>
+                                <span class="feedback-date">Just now</span>
+                            </div>
+                            <div class="feedback-content">
+                                Welcome to your dashboard! Submit your weekly availability to get started.
+                            </div>
+                        </div>
+                    </div>
+                    <button id="requestFeedbackBtn" style="margin-top: 1rem; background: linear-gradient(to right, #06b6d4, #0d9488); color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer;">
+                        Request Feedback
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Availability Modal -->
+    <div id="availabilityModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" id="closeAvailabilityModal">&times;</span>
+            <h2 class="modal-title">Update Weekly Availability</h2>
+            <p style="margin-bottom: 1.5rem;">Please select your available time slots for the first 4 working days of the week (total 36 hours).</p>
+            
+            <form id="availabilityForm" class="availability-form">
+                <div class="day-section">
+                    <div class="day-header">Monday</div>
+                    <div class="time-slots" id="mondaySlots">
+                        <div class="time-slot">
+                            <input type="time" class="time-input start-time" required>
+                            <span>to</span>
+                            <input type="time" class="time-input end-time" required>
+                            <span class="remove-slot"><i class="fas fa-times"></i></span>
+                        </div>
+                    </div>
+                    <div class="add-slot" onclick="addTimeSlot('mondaySlots')">
+                        <i class="fas fa-plus"></i> Add time slot
+                    </div>
+                </div>
+                
+                <div class="day-section">
+                    <div class="day-header">Tuesday</div>
+                    <div class="time-slots" id="tuesdaySlots">
+                        <div class="time-slot">
+                            <input type="time" class="time-input start-time" required>
+                            <span>to</span>
+                            <input type="time" class="time-input end-time" required>
+                            <span class="remove-slot"><i class="fas fa-times"></i></span>
+                        </div>
+                    </div>
+                    <div class="add-slot" onclick="addTimeSlot('tuesdaySlots')">
+                        <i class="fas fa-plus"></i> Add time slot
+                    </div>
+                </div>
+                
+                <div class="day-section">
+                    <div class="day-header">Wednesday</div>
+                    <div class="time-slots" id="wednesdaySlots">
+                        <div class="time-slot">
+                            <input type="time" class="time-input start-time" required>
+                            <span>to</span>
+                            <input type="time" class="time-input end-time" required>
+                            <span class="remove-slot"><i class="fas fa-times"></i></span>
+                        </div>
+                    </div>
+                    <div class="add-slot" onclick="addTimeSlot('wednesdaySlots')">
+                        <i class="fas fa-plus"></i> Add time slot
+                    </div>
+                </div>
+                
+                <div class="day-section">
+                    <div class="day-header">Thursday</div>
+                    <div class="time-slots" id="thursdaySlots">
+                        <div class="time-slot">
+                            <input type="time" class="time-input start-time" required>
+                            <span>to</span>
+                            <input type="time" class="time-input end-time" required>
+                            <span class="remove-slot"><i class="fas fa-times"></i></span>
+                        </div>
+                    </div>
+                    <div class="add-slot" onclick="addTimeSlot('thursdaySlots')">
+                        <i class="fas fa-plus"></i> Add time slot
+                    </div>
+                </div>
+                
+                <div style="margin-top: 1rem;">
+                    <label>
+                        <input type="checkbox" id="repeatWeekly" name="repeatWeekly">
+                        Repeat this availability weekly
+                    </label>
+                </div>
+                
+                <div style="margin-top: 1rem; font-weight: 600;">
+                    Total Hours: <span id="totalHours">0</span>/36
+                </div>
+                
+                <button type="submit" class="submit-btn">Submit Availability</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Performance Modal -->
+    <div id="performanceModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" id="closePerformanceModal">&times;</span>
+            <h2 class="modal-title">Your Performance Details</h2>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <h3 style="font-size: 1.1rem; color: #0e7490; margin-bottom: 0.5rem;">Weekly Progress</h3>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <span>Planned: 36 hours</span>
+                    <span id="modalHoursCompleted">Actual: 0 hours</span>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-bar" id="modalHoursProgress" style="width: 0%"></div>
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <h3 style="font-size: 1.1rem; color: #0e7490; margin-bottom: 0.5rem;">Daily Variance</h3>
+                <canvas id="varianceChart" height="200"></canvas>
+            </div>
+            
+            <div>
+                <h3 style="font-size: 1.1rem; color: #0e7490; margin-bottom: 0.5rem;">AI Feedback</h3>
+                <div class="feedback-item ai-feedback" id="detailedAiFeedback">
+                    <div class="feedback-content">
+                        Loading feedback analysis...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Request Feedback Modal -->
+    <div id="feedbackModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" id="closeFeedbackModal">&times;</span>
+            <h2 class="modal-title">Request Feedback</h2>
+            
+            <form id="feedbackRequestForm" style="display: flex; flex-direction: column; gap: 1rem;">
+                <div>
+                    <label for="feedbackRecipient" style="display: block; margin-bottom: 0.5rem;">Recipient</label>
+                    <select id="feedbackRecipient" style="width: 100%; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 4px;">
+                        <option value="teamLead">Team Lead</option>
+                        <option value="hr">HR Manager</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="feedbackMessage" style="display: block; margin-bottom: 0.5rem;">Message</label>
+                    <textarea id="feedbackMessage" rows="4" style="width: 100%; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 4px;" placeholder="What specific feedback would you like to request?"></textarea>
+                </div>
+                
+                <button type="submit" style="background: linear-gradient(to right, #06b6d4, #0d9488); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 8px; cursor: pointer; font-weight: 600; align-self: flex-start;">
+                    Send Request
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification">
+        <div class="notification-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="notification-content">
+            <div class="notification-title">Success</div>
+            <div class="notification-message">Your availability has been submitted successfully.</div>
+        </div>
+        <div class="notification-close">
+            <i class="fas fa-times"></i>
+        </div>
+    </div>
+
+    <footer class="dashboard-footer">
+        <p>AI Technology Company © 2023 | Flexible 4-Day Work Week</p>
+    </footer>
+
+    <!-- Include Chart.js for performance charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+    // Check authentication
+    const token = localStorage.getItem('authToken');
+    const employeeId = localStorage.getItem('employeeId');
+    const role = localStorage.getItem('role');
+    async function initTimeTracking() { /* ... */ }
+    
+    // Redirect if not authenticated as developer
+    if (!token || !employeeId || role !== 'Developer') {
+        window.location.href = '/developer_login.html';
+        return;
+    }
+    
+    try {
+        // Validate token
+        const validationResponse = await fetch('http://localhost:3000/api/validate-token', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ employeeId }),
+            credentials: 'include'
+        });
+
+        if (!validationResponse.ok) {
+            throw new Error('Invalid token');
+        }
+
+        // Get user data
+        const userResponse = await fetch('http://localhost:3000/api/employee', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ employeeId }),
+            credentials: 'include'
+        });
+
+        if (!userResponse.ok) {
+            throw new Error('Failed to fetch user data');
+        }
+
+        const userData = await userResponse.json();
+        
+        // Update UI with user data
+        document.getElementById('developerUserName').textContent = userData.name;
+        document.getElementById('welcomeName').textContent = userData.name;
+        
+        // Initialize time tracking
+        await initTimeTracking();
+        
+        // Load other data (availability, performance, feedback)
+        await loadDeveloperData(employeeId, token);
+        
+        // Check if availability is submitted for this week
+        checkAvailabilityStatus();
+        
+    } catch (error) {
+        console.error('Initialization error:', error);
+        // Clear invalid credentials and redirect
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('employeeId');
+        localStorage.removeItem('role');
+        window.location.href = '/developer_login.html';
+        return;
+    }
+    
+    // Initialize all event listeners
+    initializeEventListeners();
+    
+
+    // Helper function to initialize time tracking
+    async function initTimeTracking() {
+    try {
+        const token = localStorage.getItem('authToken');
+        const employeeId = localStorage.getItem('employeeId');
+        
+        const response = await fetch('http://localhost:3000/api/time-tracking-status', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ employeeId })
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to load time tracking status');
+        }
+
+        const data = await response.json();
+        updateTimeTrackingUI(data);
+        
+    } catch (error) {
+        console.error('Time tracking init error:', error);
+        // Default to clocked-out state
+        document.getElementById('clockInBtn').disabled = false;
+        document.getElementById('clockOutBtn').disabled = true;
+        document.getElementById('trackingStatus').className = 'tracking-status clocked-out';
+        document.getElementById('trackingStatus').innerHTML = `
+            <i class="fas fa-clock"></i> Currently: Clocked Out
+        `;
+    }
+}
+    
+    // Helper function to update time tracking UI
+    function updateTimeTrackingUI(data) {
+        // Update clock buttons state
+        if (data.status === 'clocked-in') {
+            document.getElementById('clockInBtn').disabled = true;
+            document.getElementById('clockOutBtn').disabled = false;
+            
+            const statusText = data.lastClockIn ? 
+                `Clocked In (since ${new Date(data.lastClockIn).toLocaleTimeString()})` : 
+                'Clocked In';
+                
+            document.getElementById('trackingStatus').className = 'tracking-status clocked-in';
+            document.getElementById('trackingStatus').innerHTML = `
+                <i class="fas fa-clock"></i> Currently: ${statusText}
+            `;
+        } else {
+            document.getElementById('clockInBtn').disabled = false;
+            document.getElementById('clockOutBtn').disabled = true;
+            document.getElementById('trackingStatus').className = 'tracking-status clocked-out';
+            document.getElementById('trackingStatus').innerHTML = `
+                <i class="fas fa-clock"></i> Currently: Clocked Out
+            `;
+        }
+
+        // Update activity log
+        const todayActivity = document.getElementById('todayActivity');
+        todayActivity.innerHTML = '';
+        
+        if (data.activities && data.activities.length > 0) {
+            data.activities.forEach(activity => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${new Date(activity.time).toLocaleTimeString()}</td>
+                    <td>${activity.action === 'clock-in' ? 'Clocked In' : 'Clocked Out'}</td>
+                    <td>${activity.duration ? `${activity.duration} hours` : '-'}</td>
+                `;
+                todayActivity.appendChild(row);
+            });
+        }
+    }
+    
+    // Helper function to initialize event listeners
+    function initializeEventListeners() {
+        // Logout button
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('employeeId');
+            localStorage.removeItem('role');
+            window.location.href = '/';
+        });
+
+        // Availability modal
+        document.getElementById('openAvailabilityModal').addEventListener('click', function() {
+            document.getElementById('availabilityModal').style.display = 'flex';
+        });
+
+        document.getElementById('closeAvailabilityModal').addEventListener('click', function() {
+            document.getElementById('availabilityModal').style.display = 'none';
+        });
+
+        // Performance modal
+        document.getElementById('viewPerformanceBtn').addEventListener('click', function() {
+            document.getElementById('performanceModal').style.display = 'flex';
+            renderPerformanceChart();
+            generateAiFeedback();
+        });
+
+        document.getElementById('closePerformanceModal').addEventListener('click', function() {
+            document.getElementById('performanceModal').style.display = 'none';
+        });
+
+        // Feedback modal
+        document.getElementById('requestFeedbackBtn').addEventListener('click', function() {
+            document.getElementById('feedbackModal').style.display = 'flex';
+        });
+
+        document.getElementById('closeFeedbackModal').addEventListener('click', function() {
+            document.getElementById('feedbackModal').style.display = 'none';
+        });
+
+        // Close modals when clicking outside
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+
+        // Time slot calculations
+        document.querySelectorAll('.time-input').forEach(input => {
+            input.addEventListener('change', calculateTotalHours);
+        });
+
+        // Remove time slot buttons
+        document.querySelectorAll('.remove-slot').forEach(button => {
+            button.addEventListener('click', function() {
+                this.parentElement.remove();
+                calculateTotalHours();
+            });
+        });
+
+        // Availability form submission
+        document.getElementById('availabilityForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            await submitAvailability();
+        });
+
+        // Clock in/out buttons
+        document.getElementById('clockInBtn').addEventListener('click', clockIn);
+        document.getElementById('clockOutBtn').addEventListener('click', clockOut);
+
+        // Feedback request form
+        document.getElementById('feedbackRequestForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            await requestFeedback();
+        });
+
+        // Notification close
+        document.querySelector('.notification-close').addEventListener('click', function() {
+            document.getElementById('notification').classList.remove('show');
+        });
+    }
+
+        function initializeEventListeners() {
+            // Logout button
+            document.getElementById('logoutBtn').addEventListener('click', function() {
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('employeeId');
+                localStorage.removeItem('role');
+                window.location.href = '/';
+            });
+
+            // Availability modal
+            document.getElementById('openAvailabilityModal').addEventListener('click', function() {
+                document.getElementById('availabilityModal').style.display = 'flex';
+            });
+
+            document.getElementById('closeAvailabilityModal').addEventListener('click', function() {
+                document.getElementById('availabilityModal').style.display = 'none';
+            });
+
+            // Performance modal
+            document.getElementById('viewPerformanceBtn').addEventListener('click', function() {
+                document.getElementById('performanceModal').style.display = 'flex';
+                renderPerformanceChart();
+                generateAiFeedback();
+            });
+
+            document.getElementById('closePerformanceModal').addEventListener('click', function() {
+                document.getElementById('performanceModal').style.display = 'none';
+            });
+
+            // Feedback modal
+            document.getElementById('requestFeedbackBtn').addEventListener('click', function() {
+                document.getElementById('feedbackModal').style.display = 'flex';
+            });
+
+            document.getElementById('closeFeedbackModal').addEventListener('click', function() {
+                document.getElementById('feedbackModal').style.display = 'none';
+            });
+
+            // Close modals when clicking outside
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+            });
+
+            // Time slot calculations
+            document.querySelectorAll('.time-input').forEach(input => {
+                input.addEventListener('change', calculateTotalHours);
+            });
+
+            // Remove time slot buttons
+            document.querySelectorAll('.remove-slot').forEach(button => {
+                button.addEventListener('click', function() {
+                    this.parentElement.remove();
+                    calculateTotalHours();
+                });
+            });
+
+            // Availability form submission
+            document.getElementById('availabilityForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                await submitAvailability();
+            });
+
+            // Clock in/out buttons
+            document.getElementById('clockInBtn').addEventListener('click', clockIn);
+            document.getElementById('clockOutBtn').addEventListener('click', clockOut);
+
+            // Feedback request form
+            document.getElementById('feedbackRequestForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                await requestFeedback();
+            });
+
+            // Notification close
+            document.querySelector('.notification-close').addEventListener('click', function() {
+                document.getElementById('notification').classList.remove('show');
+            });
+        }
+
+        function addTimeSlot(dayId) {
+            const container = document.getElementById(dayId);
+            const newSlot = document.createElement('div');
+            newSlot.className = 'time-slot';
+            newSlot.innerHTML = `
+                <input type="time" class="time-input start-time" required>
+                <span>to</span>
+                <input type="time" class="time-input end-time" required>
+                <span class="remove-slot"><i class="fas fa-times"></i></span>
+            `;
+            container.appendChild(newSlot);
+            
+            // Add event listeners to new inputs
+            newSlot.querySelectorAll('.time-input').forEach(input => {
+                input.addEventListener('change', calculateTotalHours);
+            });
+            
+            newSlot.querySelector('.remove-slot').addEventListener('click', function() {
+                this.parentElement.remove();
+                calculateTotalHours();
+            });
+        }
+
+        function calculateTotalHours() {
+            let totalMinutes = 0;
+            
+            // Get all day sections
+            const daySections = ['mondaySlots', 'tuesdaySlots', 'wednesdaySlots', 'thursdaySlots'];
+            
+            daySections.forEach(dayId => {
+                const slots = document.getElementById(dayId).querySelectorAll('.time-slot');
+                
+                slots.forEach(slot => {
+                    const startInput = slot.querySelector('.start-time');
+                    const endInput = slot.querySelector('.end-time');
+                    
+                    if (startInput.value && endInput.value) {
+                        const startTime = parseTime(startInput.value);
+                        const endTime = parseTime(endInput.value);
+                        
+                        // Calculate duration in minutes
+                        let duration = (endTime.hours * 60 + endTime.minutes) - (startTime.hours * 60 + startTime.minutes);
+                        
+                        // Handle overnight (though unlikely for work hours)
+                        if (duration < 0) duration += 24 * 60;
+                        
+                        totalMinutes += duration;
+                    }
+                });
+            });
+            
+            // Convert to hours
+            const totalHours = Math.round(totalMinutes / 60 * 10) / 10;
+            document.getElementById('totalHours').textContent = totalHours;
+            
+            // Highlight if not 36 hours
+            const totalHoursElement = document.getElementById('totalHours');
+            if (totalHours < 36) {
+                totalHoursElement.style.color = '#ef4444';
+            } else if (totalHours > 36) {
+                totalHoursElement.style.color = '#f59e0b';
+            } else {
+                totalHoursElement.style.color = '#10b981';
+            }
+            
+            return totalHours;
+        }
+
+        function parseTime(timeString) {
+            const [hours, minutes] = timeString.split(':').map(Number);
+            return { hours, minutes };
+        }
+
+        async function submitAvailability() {
+            const totalHours = calculateTotalHours();
+            
+            if (totalHours !== 36) {
+                showNotification('warning', 'Total hours must be exactly 36 for the 4-day work week.');
+                return;
+            }
+            
+            // Collect availability data
+            const availability = {
+                monday: collectDayAvailability('mondaySlots'),
+                tuesday: collectDayAvailability('tuesdaySlots'),
+                wednesday: collectDayAvailability('wednesdaySlots'),
+                thursday: collectDayAvailability('thursdaySlots'),
+                repeatWeekly: document.getElementById('repeatWeekly').checked,
+                weekStartDate: getWeekStartDate()
+            };
+            
+            try {
+                const token = localStorage.getItem('authToken');
+                const employeeId = localStorage.getItem('employeeId');
+                
+                const response = await fetch('http://localhost:3000/api/submit-availability', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ employeeId, availability }),
+                    credentials: 'include'
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to submit availability');
+                }
+                
+                // Show success
+                showNotification('success', 'Your availability has been submitted successfully!');
+                
+                // Update UI
+                document.getElementById('availabilityModal').style.display = 'none';
+                displayCurrentAvailability(availability);
+                document.getElementById('availabilityAlert').style.display = 'none';
+                
+            } catch (error) {
+                console.error('Error submitting availability:', error);
+                showNotification('error', 'Failed to submit availability. Please try again.');
+            }
+        }
+
+        function collectDayAvailability(dayId) {
+            const slots = [];
+            const slotElements = document.getElementById(dayId).querySelectorAll('.time-slot');
+            
+            slotElements.forEach(slot => {
+                const startInput = slot.querySelector('.start-time');
+                const endInput = slot.querySelector('.end-time');
+                
+                if (startInput.value && endInput.value) {
+                    slots.push({
+                        start: startInput.value,
+                        end: endInput.value
+                    });
+                }
+            });
+            
+            return slots;
+        }
+
+        function getWeekStartDate() {
+            const today = new Date();
+            const dayOfWeek = today.getDay(); // 0 (Sunday) to 6 (Saturday)
+            const diff = today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1); // Adjust for Sunday
+            return new Date(today.setDate(diff)).toISOString().split('T')[0];
+        }
+
+       function displayCurrentAvailability(availability) {
+    const availabilityDisplay = document.getElementById('availabilityDisplay');
+    availabilityDisplay.innerHTML = '';
+    
+    // Check if availability data exists
+    if (!availability) {
+        availabilityDisplay.innerHTML = '<div style="color: #64748b;">No availability submitted yet</div>';
+        return;
+    }
+
+    let html = '';
+    const days = ['monday', 'tuesday', 'wednesday', 'thursday'];
+    
+    days.forEach(day => {
+        const daySlots = availability[day];
+        
+        html += `<div style="margin-bottom: 0.5rem;"><strong>${day.charAt(0).toUpperCase() + day.slice(1)}:</strong> `;
+        
+        if (!daySlots || !Array.isArray(daySlots) || daySlots.length === 0) {
+            html += 'Not available';
+        } else {
+            // Safely map the slots
+            html += daySlots.map(slot => {
+                if (slot && slot.start && slot.end) {
+                    return `${slot.start} - ${slot.end}`;
+                }
+                return 'Invalid slot';
+            }).join(', ');
+        }
+        
+        html += '</div>';
+    });
+    
+    availabilityDisplay.innerHTML = html;
+    document.getElementById('currentAvailability').style.display = 'block';
+}
+
+       async function loadDeveloperData(employeeId, token) {
+    try {
+        const availabilityResponse = await fetch('http://localhost:3000/api/get-availability', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ employeeId })
+        });
+
+        if (!availabilityResponse.ok) {
+            throw new Error('Failed to load availability');
+        }
+
+        const responseData = await availabilityResponse.json();
+        
+        // Make sure we're passing the availability object correctly
+        if (responseData.availability) {
+            displayCurrentAvailability(responseData.availability);
+        } else {
+            console.log('No availability data in response:', responseData);
+            displayCurrentAvailability(null); // Show empty state
+        }
+
+    } catch (error) {
+        console.error('Error loading availability:', error);
+        showNotification('error', 'Failed to load availability data');
+        displayCurrentAvailability(null); // Show empty state
+    }
+}
+
+        function updateTimeTrackingUI(trackingData) {
+            const todayActivity = document.getElementById('todayActivity');
+            todayActivity.innerHTML = '';
+            
+            if (trackingData.today && trackingData.today.length > 0) {
+                trackingData.today.forEach(entry => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${new Date(entry.timestamp).toLocaleTimeString()}</td>
+                        <td>${entry.action === 'clock-in' ? 'Clocked In' : 'Clocked Out'}</td>
+                        <td>${entry.duration || '-'}</td>
+                    `;
+                    todayActivity.appendChild(row);
+                });
+                
+                // Check if currently clocked in
+                const lastEntry = trackingData.today[trackingData.today.length - 1];
+                if (lastEntry.action === 'clock-in' && !lastEntry.duration) {
+                    document.getElementById('clockInBtn').disabled = true;
+                    document.getElementById('clockOutBtn').disabled = false;
+                    document.getElementById('trackingStatus').className = 'tracking-status clocked-in';
+                    document.getElementById('trackingStatus').innerHTML = `<i class="fas fa-clock"></i> Currently: Clocked In (since ${new Date(lastEntry.timestamp).toLocaleTimeString()})`;
+                }
+            }
+        }
+
+        function updatePerformanceUI(performanceData) {
+            document.getElementById('hoursCompleted').textContent = `${performanceData.hoursCompleted || 0}/36`;
+            
+            const progressPercentage = Math.min(100, Math.round((performanceData.hoursCompleted || 0) / 36 * 100));
+            document.getElementById('hoursProgress').style.width = `${progressPercentage}%`;
+            
+            // Update other metrics
+            if (performanceData.onTimeAvailability) {
+                document.getElementById('onTimeAvailability').textContent = `${performanceData.onTimeAvailability}%`;
+                if (performanceData.onTimeAvailability < 70) {
+                    document.getElementById('onTimeAvailability').className = 'metric-value bad';
+                } else if (performanceData.onTimeAvailability < 90) {
+                    document.getElementById('onTimeAvailability').className = 'metric-value warning';
+                } else {
+                    document.getElementById('onTimeAvailability').className = 'metric-value good';
+                }
+            }
+            
+            if (performanceData.activityVariance) {
+                document.getElementById('activityVariance').textContent = `±${performanceData.activityVariance}%`;
+                if (performanceData.activityVariance > 20) {
+                    document.getElementById('activityVariance').className = 'metric-value bad';
+                } else if (performanceData.activityVariance > 10) {
+                    document.getElementById('activityVariance').className = 'metric-value warning';
+                } else {
+                    document.getElementById('activityVariance').className = 'metric-value good';
+                }
+            }
+            
+            if (performanceData.productivityScore) {
+                document.getElementById('productivityScore').textContent = performanceData.productivityScore;
+                if (performanceData.productivityScore < 70) {
+                    document.getElementById('productivityScore').className = 'metric-value bad';
+                } else if (performanceData.productivityScore < 85) {
+                    document.getElementById('productivityScore').className = 'metric-value warning';
+                } else {
+                    document.getElementById('productivityScore').className = 'metric-value good';
+                }
+            }
+        }
+
+        function updateFeedbackUI(feedbackData) {
+            const feedbackList = document.getElementById('feedbackList');
+            feedbackList.innerHTML = '';
+            
+            if (feedbackData.feedbacks && feedbackData.feedbacks.length > 0) {
+                feedbackData.feedbacks.forEach(feedback => {
+                    const feedbackItem = document.createElement('div');
+                    feedbackItem.className = `feedback-item ${feedback.sender === 'AI Assistant' ? 'ai-feedback' : ''}`;
+                    
+                    const date = new Date(feedback.timestamp);
+                    const dateString = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+                    
+                    feedbackItem.innerHTML = `
+                        <div class="feedback-header">
+                            <span class="feedback-sender">${feedback.sender}</span>
+                            <span class="feedback-date">${dateString}</span>
+                        </div>
+                        <div class="feedback-content">${feedback.message}</div>
+                    `;
+                    
+                    feedbackList.appendChild(feedbackItem);
+                });
+            } else {
+                feedbackList.innerHTML = '<p>No feedback yet.</p>';
+            }
+        }
+
+    async function clockIn() {
+    const clockInBtn = document.getElementById('clockInBtn');
+    try {
+        clockInBtn.disabled = true;
+        clockInBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Clocking In...';
+        
+        const token = localStorage.getItem('authToken');
+        const employeeId = localStorage.getItem('employeeId');
+        
+        const response = await fetch('http://localhost:3000/api/clock-in', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ employeeId })
+        });
+
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.message || 'Failed to clock in');
+        }
+
+        // Refresh time tracking data
+        await initTimeTracking();
+        showNotification('success', data.message || 'You have successfully clocked in.');
+        
+    } catch (error) {
+        console.error('Error clocking in:', error);
+        showNotification('error', error.message || 'Failed to clock in. Please try again.');
+    } finally {
+        clockInBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Clock In';
+    }
+}
+
+// Clock Out Function
+async function clockOut() {
+    const clockOutBtn = document.getElementById('clockOutBtn');
+    try {
+        clockOutBtn.disabled = true;
+        clockOutBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Clocking Out...';
+        
+        const token = localStorage.getItem('authToken');
+        const employeeId = localStorage.getItem('employeeId');
+        
+        const response = await fetch('http://localhost:3000/api/clock-out', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ employeeId })
+        });
+
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.message || 'Failed to clock out');
+        }
+
+        // Refresh time tracking data
+        await initTimeTracking();
+        showNotification('success', data.message || 'You have successfully clocked out.');
+        
+    } catch (error) {
+        console.error('Error clocking out:', error);
+        showNotification('error', error.message || 'Failed to clock out. Please try again.');
+    } finally {
+        clockOutBtn.innerHTML = '<i class="fas fa-sign-out-alt"></i> Clock Out';
+    }
+}
+
+        async function requestFeedback() {
+            try {
+                const token = localStorage.getItem('authToken');
+                const employeeId = localStorage.getItem('employeeId');
+                const recipient = document.getElementById('feedbackRecipient').value;
+                const message = document.getElementById('feedbackMessage').value;
+                
+                if (!message.trim()) {
+                    showNotification('warning', 'Please enter a feedback request message.');
+                    return;
+                }
+                
+                const response = await fetch('http://localhost:3000/api/request-feedback', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ 
+                        employeeId,
+                        recipient,
+                        message 
+                    }),
+                    credentials: 'include'
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to send feedback request');
+                }
+                
+                // Close modal and show success
+                document.getElementById('feedbackModal').style.display = 'none';
+                document.getElementById('feedbackMessage').value = '';
+                showNotification('success', 'Your feedback request has been sent successfully!');
+                
+                // Refresh feedback list
+                await loadDeveloperData(employeeId, token);
+                
+            } catch (error) {
+                console.error('Error requesting feedback:', error);
+                showNotification('error', 'Failed to send feedback request. Please try again.');
+            }
+        }
+
+        function renderPerformanceChart() {
+            const ctx = document.getElementById('varianceChart').getContext('2d');
+            
+            // Sample data - in a real app, this would come from the server
+            const days = ['Mon', 'Tue', 'Wed', 'Thu'];
+            const plannedHours = [9, 9, 9, 9];
+            const actualHours = [8.5, 9.2, 8, 9.5];
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: days,
+                    datasets: [
+                        {
+                            label: 'Planned Hours',
+                            data: plannedHours,
+                            backgroundColor: 'rgba(6, 182, 212, 0.7)',
+                            borderColor: 'rgba(6, 182, 212, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Actual Hours',
+                            data: actualHours,
+                            backgroundColor: 'rgba(16, 185, 129, 0.7)',
+                            borderColor: 'rgba(16, 185, 129, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Hours'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Update modal performance data
+            const hoursCompleted = actualHours.reduce((sum, hours) => sum + hours, 0);
+            document.getElementById('modalHoursCompleted').textContent = `Actual: ${hoursCompleted} hours`;
+            const progressPercentage = Math.min(100, Math.round(hoursCompleted / 36 * 100));
+            document.getElementById('modalHoursProgress').style.width = `${progressPercentage}%`;
+        }
+        async function loadDeveloperData(employeeId, token) {
+    try {
+        // Load availability
+        const availabilityResponse = await fetch('http://localhost:3000/api/get-availability', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ employeeId })
+        });
+
+        if (!availabilityResponse.ok) {
+            throw new Error(`HTTP error! status: ${availabilityResponse.status}`);
+        }
+
+        const responseData = await availabilityResponse.json();
+        console.log('Availability response:', responseData); // Debugging
+        
+        // Ensure we're passing the correct data structure
+        if (responseData.availability) {
+            displayCurrentAvailability(responseData.availability);
+        } else {
+            console.log('No availability data found');
+            displayCurrentAvailability({
+                monday: [],
+                tuesday: [],
+                wednesday: [],
+                thursday: []
+            });
+        }
+
+    } catch (error) {
+        console.error('Error loading availability:', error);
+        showNotification('error', 'Failed to load availability data');
+        // Display empty availability
+        displayCurrentAvailability({
+            monday: [],
+            tuesday: [],
+            wednesday: [],
+            thursday: []
+        });
+    }
+}
+// Add this endpoint with your other time tracking 
+
+
+        function generateAiFeedback() {
+            // In a real app, this would call an LLM API
+            const feedbackElement = document.getElementById('detailedAiFeedback');
+            
+            // Simulate loading
+            feedbackElement.querySelector('.feedback-content').textContent = 'Analyzing your performance data...';
+            
+            setTimeout(() => {
+                const feedbackText = `
+                    Based on your performance data:
+                    - You're consistently meeting your planned hours with minor variances.
+                    - Your Thursday productivity is excellent (105% of target).
+                    - Wednesday shows a slight dip - consider reviewing your schedule.
+                    - Overall, you're performing well above average for your team.
+                    
+                    Suggestions:
+                    - Try to maintain consistency across all days.
+                    - Consider taking short breaks to maintain productivity.
+                `;
+                
+                feedbackElement.querySelector('.feedback-content').textContent = feedbackText;
+            }, 1500);
+        }
+        async function loadDeveloperData(employeeId, token) {
+    try {
+        // Load availability
+        const availabilityResponse = await fetch('http://localhost:3000/api/get-availability', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ employeeId })
+        });
+
+        if (!availabilityResponse.ok) {
+            throw new Error(`HTTP error! status: ${availabilityResponse.status}`);
+        }
+
+        const responseData = await availabilityResponse.json();
+        console.log('Availability response:', responseData); // Debugging
+        
+        // Ensure we're passing the correct data structure
+        if (responseData.availability) {
+            displayCurrentAvailability(responseData.availability);
+        } else {
+            console.log('No availability data found');
+            displayCurrentAvailability({
+                monday: [],
+                tuesday: [],
+                wednesday: [],
+                thursday: []
+            });
+        }
+
+    } catch (error) {
+        console.error('Error loading availability:', error);
+        showNotification('error', 'Failed to load availability data');
+        // Display empty availability
+        displayCurrentAvailability({
+            monday: [],
+            tuesday: [],
+            wednesday: [],
+            thursday: []
+        });
+    }
+}
+function displayCurrentAvailability(availability) {
+    const availabilityDisplay = document.getElementById('availabilityDisplay');
+    availabilityDisplay.innerHTML = '';
+    
+    // Ensure we have a valid availability object
+    if (!availability || typeof availability !== 'object') {
+        availability = {
+            monday: [],
+            tuesday: [],
+            wednesday: [],
+            thursday: []
+        };
+    }
+
+    let html = '';
+    const days = ['monday', 'tuesday', 'wednesday', 'thursday'];
+    
+    days.forEach(day => {
+        const daySlots = availability[day] || [];
+        
+        html += `<div style="margin-bottom: 0.5rem;"><strong>${day.charAt(0).toUpperCase() + day.slice(1)}:</strong> `;
+        
+        if (!Array.isArray(daySlots)) {
+            html += 'Invalid data format';
+        } else if (daySlots.length === 0) {
+            html += 'Not available';
+        } else {
+            html += daySlots.map(slot => {
+                if (slot && slot.start && slot.end) {
+                    return `${slot.start} - ${slot.end}`;
+                }
+                return 'Invalid slot';
+            }).join(', ');
+        }
+        
+        html += '</div>';
+    });
+    
+    availabilityDisplay.innerHTML = html;
+    document.getElementById('currentAvailability').style.display = 'block';
+}
+
+        function checkAvailabilityStatus() {
+            // In a real app, this would check with the server
+            const today = new Date();
+            const dayOfWeek = today.getDay(); // 0 (Sunday) to 6 (Saturday)
+            
+            // Show alert if it's Monday and availability isn't submitted
+            if (dayOfWeek === 1) { // Monday
+                const availabilityDisplay = document.getElementById('availabilityDisplay');
+                if (!availabilityDisplay || availabilityDisplay.children.length === 0) {
+                    document.getElementById('availabilityAlert').style.display = 'flex';
+                }
+            }
+        }
+
+        function showNotification(type, message) {
+            const notification = document.getElementById('notification');
+            const icon = notification.querySelector('.notification-icon i');
+            const title = notification.querySelector('.notification-title');
+            const msg = notification.querySelector('.notification-message');
+            
+            // Set notification content
+            msg.textContent = message;
+            
+            // Set style based on type
+            notification.className = 'notification';
+            notification.classList.add(type);
+            
+            // Set icon and title
+            if (type === 'success') {
+                icon.className = 'fas fa-check-circle';
+                title.textContent = 'Success';
+            } else if (type === 'warning') {
+                icon.className = 'fas fa-exclamation-triangle';
+                title.textContent = 'Warning';
+            } else {
+                icon.className = 'fas fa-times-circle';
+                title.textContent = 'Error';
+            }
+            
+            // Show notification
+            notification.classList.add('show');
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 5000);
+        }
+});
+    </script>
+</body>
+</html>
