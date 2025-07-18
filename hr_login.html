@@ -255,7 +255,7 @@
     </div>
 
     <script>
-      document.getElementById('hrLoginForm').addEventListener('submit', async function(e) {
+     document.getElementById('hrLoginForm').addEventListener('submit', async function(e) {
   e.preventDefault();
   
   const employeeId = document.getElementById('hrEmployeeId').value;
@@ -275,6 +275,29 @@
       }),
       credentials: 'include' // Crucial for cookies
     });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Login failed');
+    }
+
+    const data = await response.json();
+    
+    // Store both the token and user data in localStorage
+    localStorage.setItem('authToken', data.token);
+    localStorage.setItem('employeeId', data.employeeId);
+    localStorage.setItem('role', data.role);
+    localStorage.setItem('name', data.name);
+    
+    // Redirect to dashboard
+    window.location.href = '/hr_dashboard.html';
+    
+  } catch (error) {
+    errorMessage.textContent = error.message;
+    errorMessage.style.display = 'block';
+    console.error('Login error:', error);
+  }
+});
     
     if (!response.ok) {
       const errorData = await response.json();
