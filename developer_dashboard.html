@@ -824,7 +824,7 @@
     
     try {
         // Validate token
-        const validationResponse = await fetch('http://localhost:3000/api/validate-token', {
+        const validationResponse = await fetch('https://hrm-system-atcf.onrender.com/validate-token', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -839,7 +839,7 @@
         }
 
         // Get user data
-        const userResponse = await fetch('http://localhost:3000/api/employee', {
+        const userResponse = await fetch('https://hrm-system-atcf.onrender.com/employee', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -888,7 +888,7 @@
         const token = localStorage.getItem('authToken');
         const employeeId = localStorage.getItem('employeeId');
         
-        const response = await fetch('http://localhost:3000/api/time-tracking-status', {
+        const response = await fetch('https://hrm-system-atcf.onrender.com/time-tracking-status', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -1217,7 +1217,7 @@
                 const token = localStorage.getItem('authToken');
                 const employeeId = localStorage.getItem('employeeId');
                 
-                const response = await fetch('http://localhost:3000/api/submit-availability', {
+                const response = await fetch('https://hrm-system-atcf.onrender.com/submit-availability', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1310,7 +1310,7 @@
 
        async function loadDeveloperData(employeeId, token) {
     try {
-        const availabilityResponse = await fetch('http://localhost:3000/api/get-availability', {
+        const availabilityResponse = await fetch('https://hrm-system-atcf.onrender.com/get-availability', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -1443,7 +1443,7 @@
         const token = localStorage.getItem('authToken');
         const employeeId = localStorage.getItem('employeeId');
         
-        const response = await fetch('http://localhost:3000/api/clock-in', {
+        const response = await fetch('https://hrm-system-atcf.onrender.com/clock-in', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -1480,7 +1480,7 @@ async function clockOut() {
         const token = localStorage.getItem('authToken');
         const employeeId = localStorage.getItem('employeeId');
         
-        const response = await fetch('http://localhost:3000/api/clock-out', {
+        const response = await fetch('https://hrm-system-atcf.onrender.com/clock-out', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -1519,7 +1519,7 @@ async function clockOut() {
                     return;
                 }
                 
-                const response = await fetch('http://localhost:3000/api/request-feedback', {
+                const response = await fetch('https://hrm-system-atcf.onrender.com/request-feedback', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1603,7 +1603,7 @@ async function clockOut() {
         async function loadDeveloperData(employeeId, token) {
     try {
         // Load availability
-        const availabilityResponse = await fetch('http://localhost:3000/api/get-availability', {
+        const availabilityResponse = await fetch('https://hrm-system-atcf.onrender.com/get-availability', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -1673,7 +1673,7 @@ async function clockOut() {
         async function loadDeveloperData(employeeId, token) {
     try {
         // Load availability
-        const availabilityResponse = await fetch('http://localhost:3000/api/get-availability', {
+        const availabilityResponse = await fetch('https://hrm-system-atcf.onrender.com/get-availability', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
